@@ -1,2 +1,0 @@
-# Personality-Test
-Different test
