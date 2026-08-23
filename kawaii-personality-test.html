@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#faf4ee">
+<title>你的快乐能量测试</title>
+<style>
+  :root{
+    --bg: oklch(0.965 0.016 85);
+    --surface: oklch(0.99 0.006 88);
+    --surface-2: oklch(0.955 0.02 80);
+    --pink: oklch(0.82 0.095 22);
+    --pink-deep: oklch(0.7 0.115 24);
+    --brown: oklch(0.66 0.07 55);
+    --brown-deep: oklch(0.5 0.06 55);
+    --ink: oklch(0.34 0.035 55);
+    --ink-soft: oklch(0.5 0.03 55);
+    --ink-faint: oklch(0.66 0.025 60);
+    --cream: oklch(0.93 0.055 85);
+    --radius-lg: 28px;
+    --radius-md: 18px;
+    --shadow-soft: 0 10px 30px oklch(0.5 0.04 60 / 0.12), 0 2px 8px oklch(0.5 0.04 60 / 0.06);
+    --shadow-press: 0 3px 10px oklch(0.5 0.04 60 / 0.16);
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  *{ box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html, body{ height: 100%; }
+
+  body{
+    font-family: "Yu Gothic UI", "Microsoft YaHei UI", "PingFang SC", "Hiragino Sans GB", system-ui, -apple-system, sans-serif;
+    background:
+      radial-gradient(circle at 12% 8%,  oklch(0.93 0.055 85 / 0.55), transparent 34%),
+      radial-gradient(circle at 88% 16%, oklch(0.84 0.09 30 / 0.35), transparent 30%),
+      radial-gradient(circle at 18% 88%, oklch(0.9 0.05 75 / 0.5), transparent 32%),
+      var(--bg);
+    background-attachment: fixed;
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    overflow-x: hidden;
+  }
+
+  /* 背景细点装饰 */
+  body::before{
+    content: "";
+    position: fixed; inset: 0;
+    pointer-events: none;
+    background-image: radial-gradient(oklch(0.6 0.05 55 / 0.10) 1px, transparent 1.6px);
+    background-size: 26px 26px;
+    z-index: 0;
+  }
+
+  main{
+    position: relative; z-index: 1;
+    width: 100%;
+    max-width: 520px;
+    padding: calc(20px + env(safe-area-inset-top)) 22px calc(28px + env(safe-area-inset-bottom));
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  section[hidden]{ display: none !important; }
+
+  /* ---------- 通用 ---------- */
+  .kicker{
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 13px; letter-spacing: 0.14em; font-weight: 700;
+    color: var(--brown-deep);
+    margin-bottom: 18px;
+  }
+  .kicker::before, .kicker::after{
+    content: ""; width: 22px; height: 1.5px;
+    background: var(--pink); border-radius: 2px;
+  }
+  .kicker::before{ margin-right: 2px; }
+  .kicker::after{ margin-left: 2px; }
+
+  .btn{
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%;
+    padding: 17px 22px;
+    border: none; border-radius: 999px;
+    font-family: inherit;
+    font-size: 17px; font-weight: 700; letter-spacing: 0.04em;
+    color: var(--ink);
+    background: var(--surface);
+    box-shadow: var(--shadow-soft);
+    cursor: pointer;
+    transition: transform 0.16s var(--ease-out), box-shadow 0.16s var(--ease-out), background 0.16s var(--ease-out);
+    touch-action: manipulation;
+  }
+  .btn:hover{ transform: translateY(-2px); box-shadow: var(--shadow-press); }
+  .btn:active{ transform: translateY(1px) scale(0.985); }
+  .btn:focus-visible{ outline: 3px solid var(--pink); outline-offset: 2px; }
+
+  .btn-primary{
+    background: var(--pink);
+    color: oklch(0.28 0.04 55);
+  }
+  .btn-primary:hover{ background: var(--pink-deep); }
+
+  /* ---------- 封面 ---------- */
+  #cover{
+    flex: 1;
+    display: flex; flex-direction: column;
+    padding-top: 6vh;
+  }
+  .sticker-row{
+    display: flex; gap: 10px; margin-bottom: 34px; flex-wrap: wrap;
+  }
+  .sticker{
+    width: 46px; height: 46px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 800; color: var(--brown-deep);
+    background: var(--surface);
+    box-shadow: var(--shadow-soft);
+    transform: rotate(-6deg);
+  }
+  .sticker:nth-child(2){ transform: rotate(5deg); background: var(--cream); }
+  .sticker:nth-child(3){ transform: rotate(-3deg); background: oklch(0.9 0.05 60 / 0.5); }
+  .sticker:nth-child(4){ transform: rotate(7deg); background: oklch(0.84 0.09 30 / 0.35); }
+
+  .cover-title{
+    font-size: clamp(40px, 11vw, 52px);
+    line-height: 1.12;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin-bottom: 20px;
+  }
+  .cover-title .accent{
+    color: var(--brown-deep);
+    position: relative;
+    white-space: nowrap;
+  }
+  .cover-title .accent::after{
+    content: "";
+    position: absolute; left: 0; right: 0; bottom: 0.08em;
+    height: 0.28em;
+    background: oklch(0.82 0.095 22 / 0.45);
+    border-radius: 4px;
+    z-index: -1;
+  }
+  .cover-sub{
+    font-size: 16px; line-height: 1.8;
+    color: var(--ink-soft);
+    margin-bottom: 12px;
+    max-width: 30em;
+  }
+  .cover-note{
+    font-size: 13px; color: var(--ink-faint);
+    line-height: 1.7;
+    margin-bottom: 40px;
+  }
+  .cover-actions{
+    margin-top: auto;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .cover-actions .btn-secondary{
+    background: transparent;
+    box-shadow: none;
+    border: 1.5px dashed var(--pink);
+    color: var(--brown-deep);
+    font-weight: 600;
+  }
+
+  /* ---------- 答题 ---------- */
+  #quiz{ flex: 1; display: flex; flex-direction: column; }
+  .progress{
+    height: 8px; border-radius: 999px;
+    background: var(--surface-2);
+    overflow: hidden;
+    margin: 6px 0 30px;
+  }
+  .progress-fill{
+    height: 100%; width: 0%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--pink), oklch(0.75 0.1 40));
+    transition: width 0.5s var(--ease-out);
+  }
+  .q-count{
+    font-size: 13px; color: var(--ink-faint); font-weight: 600;
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+  }
+  .q-title{
+    font-size: 22px; line-height: 1.5;
+    font-weight: 800; letter-spacing: 0.01em;
+    margin-bottom: 28px;
+  }
+  .opts{ display: flex; flex-direction: column; gap: 13px; }
+  .opt{
+    position: relative;
+    width: 100%;
+    text-align: left;
+    padding: 17px 20px;
+    border: none; border-radius: var(--radius-md);
+    font-family: inherit;
+    font-size: 16px; line-height: 1.5; font-weight: 600;
+    color: var(--ink);
+    background: var(--surface);
+    box-shadow: var(--shadow-soft);
+    cursor: pointer;
+    transition: transform 0.16s var(--ease-out), background 0.16s var(--ease-out), box-shadow 0.16s var(--ease-out);
+    touch-action: manipulation;
+  }
+  .opt:hover{ transform: translateY(-2px); box-shadow: var(--shadow-press); }
+  .opt:active{ transform: translateY(1px) scale(0.99); }
+  .opt:focus-visible{ outline: 3px solid var(--pink); outline-offset: 2px; }
+  .opt .mark{
+    position: absolute; top: 16px; right: 18px;
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--surface-2);
+    transition: background 0.2s var(--ease-out), transform 0.2s var(--ease-out);
+  }
+  .opt .mark::after{
+    content: "✓";
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 800;
+    color: oklch(0.99 0.005 88);
+    opacity: 0; transform: scale(0.5);
+    transition: opacity 0.2s var(--ease-out), transform 0.2s var(--ease-out);
+  }
+  .opt.selected{
+    background: var(--pink);
+    color: oklch(0.28 0.04 55);
+    box-shadow: var(--shadow-press);
+  }
+  .opt.selected .mark{ background: var(--brown-deep); transform: scale(1.05); }
+  .opt.selected .mark::after{ opacity: 1; transform: scale(1); }
+
+  .fade-in{ animation: fadeIn 0.5s var(--ease-out) both; }
+  @keyframes fadeIn{
+    from{ opacity: 0; transform: translateY(18px); }
+    to{ opacity: 1; transform: translateY(0); }
+  }
+
+  /* ---------- 解析中 ---------- */
+  #analyzing{
+    flex: 1;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    gap: 26px;
+  }
+  .orbits{
+    width: 120px; height: 120px; position: relative;
+  }
+  .orbits .core{
+    position: absolute; inset: 34px;
+    border-radius: 50%;
+    background: var(--pink);
+    box-shadow: var(--shadow-soft);
+  }
+  .orbits .dot{
+    position: absolute;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: var(--brown);
+    animation: orbit 1.6s var(--ease-out) infinite;
+  }
+  .orbits .dot:nth-child(1){ animation-delay: 0s; }
+  .orbits .dot:nth-child(2){ animation-delay: 0.35s; }
+  .orbits .dot:nth-child(3){ animation-delay: 0.7s; }
+  @keyframes orbit{
+    0%{ transform: rotate(0deg) translateX(50px) rotate(0deg); }
+    100%{ transform: rotate(360deg) translateX(50px) rotate(-360deg); }
+  }
+  .analyzing-text{ font-size: 16px; color: var(--ink-soft); font-weight: 600; letter-spacing: 0.05em; }
+
+  /* ---------- 结果 ---------- */
+  #result{ flex: 1; display: flex; flex-direction: column; }
+  .result-badge{
+    width: 72px; height: 72px; border-radius: 26px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 34px; font-weight: 800;
+    background: var(--cream);
+    box-shadow: var(--shadow-soft);
+    transform: rotate(-4deg);
+    margin-bottom: 26px;
+  }
+  .result-type{
+    font-size: 13px; font-weight: 700; letter-spacing: 0.12em;
+    color: var(--brown-deep); margin-bottom: 10px;
+  }
+  .result-title{
+    font-size: clamp(30px, 8vw, 40px);
+    font-weight: 800; line-height: 1.2; letter-spacing: 0.01em;
+    margin-bottom: 22px;
+  }
+  .chips{ display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 28px; }
+  .chip{
+    padding: 9px 16px;
+    border-radius: 999px;
+    font-size: 14px; font-weight: 700;
+    background: var(--surface);
+    color: var(--brown-deep);
+    box-shadow: 0 3px 10px oklch(0.5 0.04 60 / 0.08);
+  }
+  .result-body{
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
+    padding: 26px 24px;
+    margin-bottom: 30px;
+  }
+  .result-body p{
+    font-size: 16px; line-height: 1.95;
+    color: var(--ink);
+  }
+  .result-body p + p{ margin-top: 14px; }
+  .result-body .pull{
+    display: block;
+    margin-top: 18px;
+    padding-top: 18px;
+    font-size: 15px; line-height: 1.9;
+    color: var(--ink-soft);
+    border-top: 1.5px dashed var(--pink);
+  }
+  .result-actions{
+    margin-top: auto;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+
+  .footer-note{
+    margin-top: 40px;
+    padding-top: 16px;
+    border-top: 1px solid oklch(0.8 0.03 70 / 0.5);
+    font-size: 11px; line-height: 1.8;
+    color: var(--ink-faint);
+    text-align: center;
+    letter-spacing: 0.04em;
+    user-select: none;
+  }
+  .footer-note .seq{
+    display: inline-block;
+    margin-top: 2px;
+    font-size: 10px;
+    color: oklch(0.78 0.02 65);
+    letter-spacing: 0.28em;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *, *::before, *::after{
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+<main>
+  <!-- ============ 封面 ============ -->
+  <section id="cover">
+    <div class="sticker-row">
+      <span class="sticker">☾</span>
+      <span class="sticker">✦</span>
+      <span class="sticker">♡</span>
+      <span class="sticker">☆</span>
+    </div>
+    <p class="kicker">趣味人格研究所</p>
+    <h1 class="cover-title">你的<br><span class="accent">快乐能量</span><br>测试</h1>
+    <p class="cover-sub">每个人都有自己独特的「充电方式」——有人靠收藏喜欢的东西续命，有人靠被用心对待的瞬间满血复活。来做一个小测试，看看你的快乐到底从哪里来。</p>
+    <p class="cover-note">9 道小问题 · 全程约 2 分钟 · 仅供娱乐，认真回答更准哦</p>
+    <div class="cover-actions">
+      <button class="btn btn-primary" id="btnStart">开始测试</button>
+      <button class="btn btn-secondary" id="btnAbout">这是什么？</button>
+    </div>
+  </section>
+
+  <!-- ============ 答题 ============ -->
+  <section id="quiz" hidden>
+    <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
+    <p class="q-count" id="qCount"></p>
+    <h2 class="q-title fade-in" id="qTitle"></h2>
+    <div class="opts" id="opts"></div>
+  </section>
+
+  <!-- ============ 解析中 ============ -->
+  <section id="analyzing" hidden>
+    <div class="orbits">
+      <span class="core"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+    </div>
+    <p class="analyzing-text">正在读取你的快乐能量…</p>
+  </section>
+
+  <!-- ============ 结果 ============ -->
+  <section id="result" hidden>
+    <div class="result-badge" id="resultBadge">♡</div>
+    <p class="result-type">你的快乐能量人格是</p>
+    <h2 class="result-title fade-in" id="resultTitle"></h2>
+    <div class="chips" id="resultChips"></div>
+    <div class="result-body">
+      <p id="resultDesc"></p>
+      <span class="pull" id="resultPull"></span>
+    </div>
+    <div class="result-actions">
+      <button class="btn btn-primary" id="btnRetest">再测一次</button>
+    </div>
+    <div class="footer-note">
+      本测试由「趣味人格研究所」出品 · 仅供娱乐 · 数据仅保存在本机
+      <span class="seq" id="secretSeq"></span>
+    </div>
+  </section>
+</main>
+
+<script>
+  /* ---------- 数据 ---------- */
+  const QUESTIONS = [
+    {
+      dim: "KP",
+      text: "如果只能选一样「光是看着就开心」的东西摆上桌面，你会选——",
+      options: [
+        { t: "一只软乎乎、圆滚滚的毛绒玩偶", v: "K" },
+        { t: "一支颜值和手感都在线的钢笔", v: "P" },
+        { t: "一整套你喜欢的动漫角色周边", v: "K" },
+        { t: "一个配色很高级的香薰蜡烛", v: "P" },
+      ],
+    },
+    {
+      dim: "KP",
+      text: "走进一家开在巷子里的可爱杂货铺，你最可能——",
+      options: [
+        { t: "被萌物击中，逛到挪不动脚", v: "K" },
+        { t: "只看那些「以后真用得上」的东西", v: "P" },
+        { t: "把喜欢的都拍照存进手机，然后空手而归", v: "P" },
+        { t: "忍不住抱一只小玩偶去结账", v: "K" },
+      ],
+    },
+    {
+      dim: "KP",
+      text: "你的桌面或房间角落里，最常出现的是——",
+      options: [
+        { t: "各种盲盒、玩偶和可爱挂件", v: "K" },
+        { t: "分门别类、收纳整齐的日用品", v: "P" },
+        { t: "一摞书和写满字的手账本", v: "P" },
+        { t: "贴满的海报、贴纸和小彩灯", v: "K" },
+      ],
+    },
+    {
+      dim: "CR",
+      text: "同样价格的两件礼物：一件是「独一无二、专门为你定制」的，一件是「功能强大、人人都说好用」的。你更会被哪件打动？",
+      options: [
+        { t: "定制款——那种「只属于我」的感觉无法替代", v: "C" },
+        { t: "功能款——好用才是硬道理", v: "R" },
+      ],
+    },
+    {
+      dim: "CR",
+      text: "买一个随身用的帆布包，你最在意的是——",
+      options: [
+        { t: "上面有没有戳中我的图案、刺绣或设计感", v: "C" },
+        { t: "隔层多不多、耐不耐脏、实不实用", v: "R" },
+      ],
+    },
+    {
+      dim: "CR",
+      text: "收到一件可以「刻上名字」的礼物时，你的真实想法是——",
+      options: [
+        { t: "超喜欢！刻上名字和日期瞬间变得有纪念意义", v: "C" },
+        { t: "无所谓，东西本身好用就行", v: "R" },
+      ],
+    },
+    {
+      dim: "EG",
+      text: "生日那天，以下两种安排你更心动——",
+      options: [
+        { t: "和重要的人一起去吃下午茶、看展、拍照", v: "E" },
+        { t: "收到一份包装精美的实体礼物", v: "G" },
+      ],
+    },
+    {
+      dim: "EG",
+      text: "比起「收到一件东西」，你更享受的是——",
+      options: [
+        { t: "和喜欢的人一起经历的那个当下", v: "E" },
+        { t: "亲手拆开、摸到实物的那一刻", v: "G" },
+      ],
+    },
+    {
+      dim: "EG",
+      text: "周末出门，你会更偏向——",
+      options: [
+        { t: "打卡一家新店、看个展，把今天过成值得纪念的一天", v: "E" },
+        { t: "淘点有意思的小物件，带点「东西」回家", v: "G" },
+      ],
+    },
+  ];
+
+  const PROFILES = {
+    "KCE": {
+      name: "梦幻收藏型 · 浪漫体验派",
+      badge: "♡",
+      chips: ["萌系收藏", "专属定制", "体验至上"],
+      desc: "你是一个很会用「喜欢的东西」给自己充电的人。那些小小的、可爱的、带着你个人印记的事物，都是你的能量补给站。你既享受被可爱包围的感觉，也珍视每一次和重要的人共同经历的瞬间。",
+      pull: "对你来说，「被放在心上」比什么都重要。你想要的，是一种既有独特归属感、又能成为难忘记忆的快乐。",
+      seq: "K·C·E",
+    },
+    "KCG": {
+      name: "专属收藏家",
+      badge: "✧",
+      chips: ["萌系收藏", "专属定制", "实物主义"],
+      desc: "你收藏的不只是物件，更是「只属于自己」的印记。你喜欢那些带着独一无二气质的东西——因为在你眼里，真正值得留在身边的，一定是有专属故事的那一件。可爱又特别，是你的快乐密码。",
+      pull: "对你而言，一件「专为你而生」的可爱实物，抵得过千言万语。那份独特性，就是最强的幸福信号。",
+      seq: "K·C·G",
+    },
+    "KRE": {
+      name: "可爱能量型 · 快乐体验派",
+      badge: "☆",
+      chips: ["萌系收藏", "实用功能", "体验至上"],
+      desc: "你是那种看到可爱的东西就会不自觉嘴角上扬的人，但同时也很务实——喜欢的东西要好看，也要好用。你享受和重要的人在一起的每分每秒，把日子过成一个个值得纪念的片段。",
+      pull: "你的快乐公式很简单：被可爱的事物治愈，被在乎的人填满。两者兼备，就是完美的一天。",
+      seq: "K·R·E",
+    },
+    "KRG": {
+      name: "萌物收集家",
+      badge: "✦",
+      chips: ["萌系收藏", "实用功能", "实物主义"],
+      desc: "你有一双会发现「可爱」的眼睛，也有一颗务实的心。你愿意为喜欢的东西买单，但一定要求它「既萌又好用」。你的房间就是你的小宇宙，装满了能让你一眼就开心起来的宝藏。",
+      pull: "对你来说，一只软乎乎又好用的东西，就是最踏实的快乐。收藏和实用，你全都要。",
+      seq: "K·R·G",
+    },
+    "PCE": {
+      name: "生活仪式感 · 浪漫派",
+      badge: "♢",
+      chips: ["生活实用", "专属定制", "体验至上"],
+      desc: "你是个讲究生活质感的人，在意细节、在意体验，也喜欢把日子过得有仪式感。你不会被花里胡哨的东西打动，但一份恰到好处的用心，会一直留在你心里很久。",
+      pull: "对你而言，最有温度的快乐，是把平凡日子过成有记忆点的瞬间。用心，比贵重更重要。",
+      seq: "P·C·E",
+    },
+    "PCG": {
+      name: "讲究的实用收藏家",
+      badge: "◇",
+      chips: ["生活实用", "专属定制", "实物主义"],
+      desc: "你理性又细腻——买东西看品质、看实用性，但遇到能戳中你的专属设计，也会毫不犹豫心动。你收藏的不是无用的美好，而是「又美又中用」的恰到好处。",
+      pull: "你欣赏的，是那种被认真对待、精心挑选的实在感。好东西，值得被好好拥有。",
+      seq: "P·C·G",
+    },
+    "PRE": {
+      name: "清醒的体验派",
+      badge: "✳",
+      chips: ["生活实用", "实用功能", "体验至上"],
+      desc: "你是典型的「人间清醒」：不跟风、不将就，只为自己真正认可的人和事心动。你更看重一段时光的质量，而不是物品本身。清醒又温柔，是你最迷人的地方。",
+      pull: "对你来说，和重要的人一起度过的踏实时光，就是最好的充电方式。",
+      seq: "P·R·E",
+    },
+    "PRG": {
+      name: "高效生活家",
+      badge: "✿",
+      chips: ["生活实用", "实用功能", "实物主义"],
+      desc: "你活得通透又高效，买东西从不犹豫，只选对的、好用的、耐用的。你不迷信仪式感，但你会把生活打理得井井有条——这种掌控感，就是你最大的安心来源。",
+      pull: "你的快乐很实在：顺手好用的东西，加上平稳充实的生活，就是稳稳的幸福。",
+      seq: "P·R·G",
+    },
+  };
+
+  /* ---------- 状态 ---------- */
+  const cover = document.getElementById("cover");
+  const quiz = document.getElementById("quiz");
+  const analyzing = document.getElementById("analyzing");
+  const result = document.getElementById("result");
+  const progressFill = document.getElementById("progressFill");
+  const qCount = document.getElementById("qCount");
+  const qTitle = document.getElementById("qTitle");
+  const optsBox = document.getElementById("opts");
+  const secretSeq = document.getElementById("secretSeq");
+
+  let index = 0;
+  let answers = [];
+
+  /* ---------- 流程 ---------- */
+  function show(section){
+    [cover, quiz, analyzing, result].forEach(s => s.hidden = s !== section);
+  }
+
+  function renderQuestion(i){
+    const q = QUESTIONS[i];
+    qCount.textContent = "QUESTION " + (i + 1) + " / " + QUESTIONS.length;
+    progressFill.style.width = ((i) / QUESTIONS.length * 100) + "%";
+    qTitle.textContent = q.text;
+    qTitle.classList.remove("fade-in");
+    void qTitle.offsetWidth;
+    qTitle.classList.add("fade-in");
+
+    optsBox.innerHTML = "";
+    q.options.forEach((opt, oi) => {
+      const btn = document.createElement("button");
+      btn.className = "opt";
+      btn.innerHTML = '<span class="t">' + opt.t + '</span><span class="mark"></span>';
+      btn.addEventListener("click", () => selectAnswer(i, oi, btn, q.options.length));
+      optsBox.appendChild(btn);
+    });
+    optsBox.classList.remove("fade-in");
+    void optsBox.offsetWidth;
+    optsBox.classList.add("fade-in");
+  }
+
+  function selectAnswer(qi, oi, btn, total){
+    if (answers[qi] !== undefined) return;
+    answers[qi] = QUESTIONS[qi].options[oi].v;
+    btn.classList.add("selected");
+
+    const wait = (qi === QUESTIONS.length - 1) ? 650 : 420;
+    setTimeout(() => {
+      if (qi < QUESTIONS.length - 1){
+        index = qi + 1;
+        renderQuestion(index);
+      } else {
+        progressFill.style.width = "100%";
+        show(analyzing);
+        setTimeout(showResult, 1500);
+      }
+    }, wait);
+  }
+
+  function computeCode(){
+    const s = { K:0, P:0, C:0, R:0, E:0, G:0 };
+    answers.forEach(v => s[v]++);
+    const dim1 = s.K >= s.P ? "K" : "P";
+    const dim2 = s.C >= s.R ? "C" : "R";
+    const dim3 = s.E >= s.G ? "E" : "G";
+    return dim1 + dim2 + dim3;
+  }
+
+  function showResult(){
+    const code = computeCode();
+    const p = PROFILES[code];
+
+    document.getElementById("resultBadge").textContent = p.badge;
+    const titleEl = document.getElementById("resultTitle");
+    titleEl.textContent = p.name;
+    titleEl.classList.remove("fade-in");
+    void titleEl.offsetWidth;
+    titleEl.classList.add("fade-in");
+
+    const chipsBox = document.getElementById("resultChips");
+    chipsBox.innerHTML = "";
+    p.chips.forEach(c => {
+      const chip = document.createElement("span");
+      chip.className = "chip";
+      chip.textContent = c;
+      chipsBox.appendChild(chip);
+    });
+
+    document.getElementById("resultDesc").textContent = p.desc;
+    document.getElementById("resultPull").textContent = p.pull;
+    secretSeq.textContent = "测评序列号 " + p.seq + " · 存档";
+    show(result);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function resetAll(){
+    index = 0;
+    answers = [];
+    show(cover);
+    progressFill.style.width = "0%";
+  }
+
+  /* ---------- 事件 ---------- */
+  document.getElementById("btnStart").addEventListener("click", () => {
+    index = 0;
+    answers = [];
+    show(quiz);
+    renderQuestion(0);
+  });
+  document.getElementById("btnRetest").addEventListener("click", resetAll);
+
+  document.getElementById("btnAbout").addEventListener("click", () => {
+    alert("这是一个关于「你如何收集快乐」的趣味人格小测试。9 道题，凭第一直觉回答就好，结果仅供娱乐～");
+  });
+</script>
+</body>
+</html>
